@@ -1,0 +1,38 @@
+#include <iostream>
+#include <thread>
+#include <mutex>
+
+// Global variables to be used by both threads
+int counterUp = 0;
+int counterDown = 20;
+
+// Mutex for synchronization
+std::mutex mtx;
+
+// Function for counting up
+void countUp() {
+    for (int i = 0; i <= 20; ++i) {
+        std::lock_guard<std::mutex> lock(mtx);
+        counterUp = i;
+        std::cout << "Thread 1: Counting up - " << counterUp << std::endl;
+    }
+}
+
+// Function for counting down
+void countDown() {
+    for (int i = 20; i >= 0; --i) {
+        std::lock_guard<std::mutex> lock(mtx);
+        counterDown = i;
+        std::cout << "Thread 2: Counting down - " << counterDown << std::endl;
+    }
+}
+
+int main() {
+    std::thread t1(countUp);
+    std::thread t2(countDown);
+
+    t1.join();
+    t2.join();
+
+    return 0;
+}
